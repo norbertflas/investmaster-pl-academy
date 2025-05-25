@@ -9,7 +9,171 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          achievement_name: string
+          achievement_type: string
+          earned_at: string
+          id: string
+          user_id: string
+          xp_reward: number | null
+        }
+        Insert: {
+          achievement_name: string
+          achievement_type: string
+          earned_at?: string
+          id?: string
+          user_id: string
+          xp_reward?: number | null
+        }
+        Update: {
+          achievement_name?: string
+          achievement_type?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+          xp_reward?: number | null
+        }
+        Relationships: []
+      }
+      case_studies: {
+        Row: {
+          asset_class: string | null
+          category: string
+          content: Json
+          created_at: string
+          description: string | null
+          difficulty_level: string | null
+          id: string
+          market: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          asset_class?: string | null
+          category: string
+          content: Json
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          id?: string
+          market?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          asset_class?: string | null
+          category?: string
+          content?: Json
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          id?: string
+          market?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          experience_level: string | null
+          first_name: string | null
+          id: string
+          investment_goals: string[] | null
+          last_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          experience_level?: string | null
+          first_name?: string | null
+          id: string
+          investment_goals?: string[] | null
+          last_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          experience_level?: string | null
+          first_name?: string | null
+          id?: string
+          investment_goals?: string[] | null
+          last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          lesson_id: string | null
+          module_id: string
+          score: number | null
+          user_id: string
+          xp_earned: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lesson_id?: string | null
+          module_id: string
+          score?: number | null
+          user_id: string
+          xp_earned?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lesson_id?: string | null
+          module_id?: string
+          score?: number | null
+          user_id?: string
+          xp_earned?: number | null
+        }
+        Relationships: []
+      }
+      user_stats: {
+        Row: {
+          certificates_earned: number | null
+          id: string
+          last_activity: string | null
+          level: number | null
+          modules_completed: number | null
+          streak_days: number | null
+          total_xp: number | null
+          user_id: string
+        }
+        Insert: {
+          certificates_earned?: number | null
+          id?: string
+          last_activity?: string | null
+          level?: number | null
+          modules_completed?: number | null
+          streak_days?: number | null
+          total_xp?: number | null
+          user_id: string
+        }
+        Update: {
+          certificates_earned?: number | null
+          id?: string
+          last_activity?: string | null
+          level?: number | null
+          modules_completed?: number | null
+          streak_days?: number | null
+          total_xp?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
