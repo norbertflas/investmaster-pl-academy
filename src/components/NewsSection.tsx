@@ -1,180 +1,189 @@
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, Clock, ExternalLink, Globe } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, ExternalLink, TrendingUp, Globe, Clock, ChevronRight } from 'lucide-react';
 
-const newsData = {
-  polska: [
+const NewsSection = () => {
+  const [news] = useState([
     {
       id: 1,
-      title: "GPW notuje rekordowe obroty w sektorze technologicznym",
-      excerpt: "Sektor technologiczny na Giełdzie Papierów Wartościowych w Warszawie osiągnął rekordowe obroty...",
-      source: "PAP Biznes",
-      time: "2 godziny temu",
-      trend: "up",
-      category: "Giełda"
+      title: "NBP podwyższa stopy procentowe o 0.25 pkt bazowych",
+      description: "Rada Polityki Pieniężnej zdecydowała o dalszym zacieśnieniu polityki monetarnej w odpowiedzi na rosnącą inflację",
+      category: "Polityka monetarna",
+      source: "NBP",
+      publishedAt: "2024-01-15T10:30:00Z",
+      impact: "high",
+      markets: ["PLN", "Obligacje", "Banki"],
+      readTime: "3 min"
     },
     {
       id: 2,
-      title: "NBP utrzymuje stopy procentowe bez zmian",
-      excerpt: "Rada Polityki Pieniężnej podjęła decyzję o pozostawieniu głównej stopy procentowej na poziomie 5,75%...",
-      source: "Bankier.pl",
-      time: "4 godziny temu",
-      trend: "neutral",
-      category: "Polityka Monetarna"
+      title: "GPW wprowadza nowe zasady ESG dla spółek",
+      description: "Giełda Papierów Wartościowych w Warszawie ogłosiła nowe wymogi raportowania ESG dla spółek z głównego rynku",
+      category: "Regulacje",
+      source: "GPW",
+      publishedAt: "2024-01-15T08:15:00Z",
+      impact: "medium",
+      markets: ["WIG", "ESG"],
+      readTime: "5 min"
     },
     {
       id: 3,
-      title: "Polski złoty umacnia się względem głównych walut",
-      excerpt: "Kurs złotego względem euro i dolara amerykańskiego wykazuje tendencję wzrostową...",
-      source: "Money.pl",
-      time: "6 godzin temu",
-      trend: "up",
-      category: "Waluty"
-    }
-  ],
-  swiat: [
+      title: "Rekordowe wyniki CD Projekt za Q4 2023",
+      description: "Polska spółka gamingowa przekroczyła oczekiwania analityków dzięki silnej sprzedaży Cyberpunk 2077",
+      category: "Wyniki spółek",
+      source: "CD Projekt",
+      publishedAt: "2024-01-14T16:45:00Z",
+      impact: "medium",
+      markets: ["CDR", "Gaming"],
+      readTime: "4 min"
+    },
     {
       id: 4,
-      title: "Fed sygnalizuje możliwość obniżek stóp procentowych",
-      excerpt: "Rezerwa Federalna USA wskazuje na możliwość obniżenia stóp procentowych w nadchodzących miesiącach...",
-      source: "Reuters",
-      time: "1 godzina temu",
-      trend: "down",
-      category: "Fed"
+      title: "Fed sygnalizuje możliwe obniżki stóp w 2024",
+      description: "Prezes Jerome Powell wskazał na możliwość trzech obniżek stóp procentowych w ciągu roku",
+      category: "Polityka monetarna",
+      source: "Federal Reserve",
+      publishedAt: "2024-01-14T14:20:00Z",
+      impact: "high",
+      markets: ["USD", "S&P 500", "Tech"],
+      readTime: "6 min"
     },
     {
       id: 5,
-      title: "Bitcoin przekracza poziom 45,000 USD",
-      excerpt: "Kryptowaluta Bitcoin odnotowuje znaczący wzrost, przekraczając psychologiczną barierę 45,000 dolarów...",
-      source: "CoinDesk",
-      time: "3 godziny temu",
-      trend: "up",
-      category: "Krypto"
+      title: "Orlen finalizuje przejęcie aktywów energetycznych",
+      description: "PKN Orlen zakończył strategiczne przejęcie, które wzmocni pozycję w sektorze energetycznym",
+      category: "M&A",
+      source: "PKN Orlen",
+      publishedAt: "2024-01-14T12:00:00Z",
+      impact: "medium",
+      markets: ["PKN", "Energia"],
+      readTime: "4 min"
     },
     {
       id: 6,
-      title: "Ceny ropy naftowej stabilizują się po wczorajszych spadkach",
-      excerpt: "Rynek ropy naftowej wykazuje oznaki stabilizacji po ostrych spadkach z poprzedniego dnia...",
-      source: "Bloomberg",
-      time: "5 godzin temu",
-      trend: "neutral",
-      category: "Surowce"
+      title: "Komisja Europejska proponuje nowe regulacje AI",
+      description: "Nowe przepisy mogą wpłynąć na spółki technologiczne działające w UE",
+      category: "Regulacje",
+      source: "Komisja Europejska",
+      publishedAt: "2024-01-13T11:30:00Z",
+      impact: "high",
+      markets: ["Tech", "AI"],
+      readTime: "7 min"
     }
-  ]
-};
+  ]);
 
-const getTrendIcon = (trend: string) => {
-  switch (trend) {
-    case "up":
-      return <TrendingUp className="w-4 h-4 text-green-500" />;
-    case "down":
-      return <TrendingDown className="w-4 h-4 text-red-500" />;
-    default:
-      return <Globe className="w-4 h-4 text-gray-500" />;
-  }
-};
-
-const getCategoryColor = (category: string) => {
-  const colors = {
-    "Giełda": "bg-blue-100 text-blue-800",
-    "Polityka Monetarna": "bg-purple-100 text-purple-800",
-    "Waluty": "bg-green-100 text-green-800",
-    "Fed": "bg-red-100 text-red-800",
-    "Krypto": "bg-yellow-100 text-yellow-800",
-    "Surowce": "bg-orange-100 text-orange-800"
+  const getImpactColor = (impact: string) => {
+    switch (impact) {
+      case 'high': return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low': return 'bg-green-100 text-green-800 border-green-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
-  return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800";
-};
 
-const NewsCard = ({ news }: { news: any }) => (
-  <Card className="hover-scale transition-all duration-300 hover:shadow-md">
-    <CardHeader className="pb-3">
-      <div className="flex items-start justify-between mb-2">
-        <Badge variant="outline" className={getCategoryColor(news.category)}>
-          {news.category}
-        </Badge>
-        {getTrendIcon(news.trend)}
-      </div>
-      <CardTitle className="text-lg leading-tight hover:text-financial-navy transition-colors cursor-pointer">
-        {news.title}
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="pt-0">
-      <CardDescription className="text-gray-600 mb-4 line-clamp-2">
-        {news.excerpt}
-      </CardDescription>
-      <div className="flex items-center justify-between text-sm text-gray-500">
-        <div className="flex items-center space-x-2">
-          <span>{news.source}</span>
-          <span>•</span>
-          <div className="flex items-center space-x-1">
-            <Clock className="w-3 h-3" />
-            <span>{news.time}</span>
-          </div>
-        </div>
-        <Button variant="ghost" size="sm" className="h-auto p-1">
-          <ExternalLink className="w-4 h-4" />
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
-);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 24) {
+      return `${diffInHours}h temu`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays} dni temu`;
+    }
+  };
 
-const NewsSection = () => {
   return (
-    <section id="news" className="py-20 bg-white">
+    <section id="news" className="py-16 bg-white dark:bg-slate-900">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-financial-gold/10 text-financial-gold border-financial-gold/20">
-            📰 Wiadomości Rynkowe
-          </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-financial-navy">
-            Bądź na Bieżąco z Rynkiem
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Najnowsze Wiadomości Rynkowe
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Śledź najważniejsze wydarzenia na polskim i światowym rynku finansowym.
-            Ucz się interpretować wiadomości i ich wpływ na inwestycje.
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Bądź na bieżąco z najważniejszymi wydarzeniami wpływającymi na rynki finansowe
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          <Tabs defaultValue="polska" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-              <TabsTrigger value="polska" className="flex items-center space-x-2">
-                <span>🇵🇱</span>
-                <span>Polska</span>
-              </TabsTrigger>
-              <TabsTrigger value="swiat" className="flex items-center space-x-2">
-                <span>🌍</span>
-                <span>Świat</span>
-              </TabsTrigger>
-            </TabsList>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {news.map((article) => (
+            <Card key={article.id} className="group hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Badge variant="outline" className="text-xs">
+                    {article.category}
+                  </Badge>
+                  <Badge variant="outline" className={getImpactColor(article.impact)}>
+                    {article.impact === 'high' ? 'Wysoki wpływ' : 
+                     article.impact === 'medium' ? 'Średni wpływ' : 'Niski wpływ'}
+                  </Badge>
+                </div>
+                <CardTitle className="text-lg leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {article.title}
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-400">
+                  {article.description}
+                </CardDescription>
+              </CardHeader>
 
-            <TabsContent value="polska" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {newsData.polska.map((news) => (
-                  <NewsCard key={news.id} news={news} />
-                ))}
-              </div>
-            </TabsContent>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center">
+                    <Globe className="w-4 h-4 mr-1" />
+                    {article.source}
+                  </div>
+                  <div className="flex items-center">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    {formatDate(article.publishedAt)}
+                  </div>
+                </div>
 
-            <TabsContent value="swiat" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {newsData.swiat.map((news) => (
-                  <NewsCard key={news.id} news={news} />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+                <div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    Dotknięte rynki:
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {article.markets.slice(0, 3).map((market, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {market}
+                      </Badge>
+                    ))}
+                    {article.markets.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{article.markets.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
 
-          <div className="text-center mt-12">
-            <Button size="lg" variant="outline" className="border-financial-navy text-financial-navy hover:bg-financial-navy hover:text-white">
-              Zobacz Wszystkie Wiadomości
-            </Button>
-          </div>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <Clock className="w-4 h-4 mr-1" />
+                    {article.readTime}
+                  </div>
+                  <Button variant="ghost" className="p-2 h-auto">
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <Button className="w-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  Czytaj więcej
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <Button size="lg" variant="outline">
+            Zobacz wszystkie wiadomości
+            <ChevronRight className="w-5 h-5 ml-2" />
+          </Button>
         </div>
       </div>
     </section>

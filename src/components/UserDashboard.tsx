@@ -1,254 +1,243 @@
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  User, 
-  Trophy, 
-  Target, 
-  Clock, 
-  Award, 
-  TrendingUp, 
-  BookOpen, 
-  Star,
-  Calendar,
-  Zap
-} from 'lucide-react';
+import { TrendingUp, Target, Calendar, Award, BookOpen, Clock, Flame, Star } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const UserDashboard = () => {
-  const userStats = {
-    name: "Jan Kowalski",
-    level: 5,
-    xp: 2340,
-    nextLevelXp: 3000,
-    streak: 7,
-    completedModules: 3,
-    totalModules: 15,
-    certificates: 1,
-    hoursLearned: 24
+  const { user } = useAuth();
+  const [userStats, setUserStats] = useState({
+    totalXP: 750,
+    level: 3,
+    streakDays: 7,
+    modulesCompleted: 3,
+    certificatesEarned: 1,
+    nextLevelXP: 1000,
+    weeklyGoal: 100,
+    weeklyProgress: 65
+  });
+
+  const [recentActivity] = useState([
+    {
+      id: 1,
+      type: 'module_completed',
+      title: 'Ukończono: Podstawy Inwestowania',
+      xp: 150,
+      timestamp: '2024-01-15T10:30:00Z'
+    },
+    {
+      id: 2,
+      type: 'achievement_earned',
+      title: 'Zdobyto osiągnięcie: Pierwszy Krok',
+      xp: 50,
+      timestamp: '2024-01-15T09:15:00Z'
+    },
+    {
+      id: 3,
+      type: 'lesson_completed',
+      title: 'Ukończono lekcję: Psychologia Inwestora',
+      xp: 25,
+      timestamp: '2024-01-14T16:45:00Z'
+    }
+  ]);
+
+  const [weeklyProgress] = useState([
+    { day: 'Pon', xp: 45, goal: 50 },
+    { day: 'Wt', xp: 30, goal: 50 },
+    { day: 'Śr', xp: 60, goal: 50 },
+    { day: 'Czw', xp: 20, goal: 50 },
+    { day: 'Pt', xp: 55, goal: 50 },
+    { day: 'Sob', xp: 35, goal: 50 },
+    { day: 'Ndz', xp: 40, goal: 50 }
+  ]);
+
+  const currentProgress = Math.round((userStats.totalXP / userStats.nextLevelXP) * 100);
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'module_completed': return <BookOpen className="w-5 h-5 text-green-600" />;
+      case 'achievement_earned': return <Award className="w-5 h-5 text-yellow-600" />;
+      case 'lesson_completed': return <Target className="w-5 h-5 text-blue-600" />;
+      default: return <Star className="w-5 h-5 text-gray-600" />;
+    }
   };
 
-  const achievements = [
-    { id: 1, name: "Pierwszy Krok", description: "Ukończenie pierwszego modułu", earned: true, icon: "🎯" },
-    { id: 2, name: "Znawca GPW", description: "Ukończenie modułu o polskiej giełdzie", earned: true, icon: "🇵🇱" },
-    { id: 3, name: "Tygodniowiec", description: "7 dni nauki z rzędu", earned: true, icon: "🔥" },
-    { id: 4, name: "Analityk", description: "Ukończenie modułu analizy technicznej", earned: false, icon: "📈" },
-    { id: 5, name: "Mistrz AI", description: "Ukończenie modułu o AI w tradingu", earned: false, icon: "🤖" },
-    { id: 6, name: "Ekspert", description: "Ukończenie wszystkich modułów", earned: false, icon: "🏆" }
-  ];
+  const formatTimeAgo = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 24) {
+      return `${diffInHours}h temu`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays} dni temu`;
+    }
+  };
 
-  const recentActivity = [
-    { action: "Ukończono lekcję", module: "Polski Rynek Giełdowy", time: "2 godziny temu", xp: 50 },
-    { action: "Zdobyto odznakę", module: "Tygodniowiec", time: "1 dzień temu", xp: 100 },
-    { action: "Ukończono test", module: "Wprowadzenie do Inwestowania", time: "2 dni temu", xp: 75 }
-  ];
-
-  const recommendedNext = [
-    { title: "Analiza Fundamentalna", description: "Naucz się oceniać wartość spółek", duration: "45 min" },
-    { title: "Zarządzanie Ryzykiem", description: "Chroń swój kapitał przed stratami", duration: "30 min" },
-    { title: "Psychologia Tradingu", description: "Opanuj emocje podczas inwestowania", duration: "35 min" }
-  ];
+  if (!user) return null;
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-16 bg-white dark:bg-slate-900">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-financial-gold/10 text-financial-gold border-financial-gold/20">
-            👤 Dashboard Użytkownika
-          </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-financial-navy">
-            Twój Postęp w Nauce
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Witaj ponownie, {user.user_metadata?.first_name || 'Inwestorze'}! 👋
           </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300">
+            Sprawdź swój postęp i kontynuuj naukę
+          </p>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          <Tabs defaultValue="progress" className="w-full">
-            <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-8">
-              <TabsTrigger value="progress">Postęp</TabsTrigger>
-              <TabsTrigger value="achievements">Osiągnięcia</TabsTrigger>
-              <TabsTrigger value="activity">Aktywność</TabsTrigger>
-            </TabsList>
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300 flex items-center">
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Poziom & XP
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-2">
+                Poziom {userStats.level}
+              </div>
+              <div className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                {userStats.totalXP} / {userStats.nextLevelXP} XP
+              </div>
+              <Progress value={currentProgress} className="h-2" />
+            </CardContent>
+          </Card>
 
-            <TabsContent value="progress" className="mt-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* User Profile Card */}
-                <Card className="lg:col-span-1">
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-20 h-20 bg-gradient-to-br from-financial-navy to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <User className="w-10 h-10 text-white" />
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-800">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center">
+                <Flame className="w-4 h-4 mr-2" />
+                Passa
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-900 dark:text-green-100 mb-2">
+                {userStats.streakDays} dni
+              </div>
+              <div className="text-sm text-green-700 dark:text-green-300">
+                Nie przerywaj passy!
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-800">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-300 flex items-center">
+                <BookOpen className="w-4 h-4 mr-2" />
+                Moduły
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-2">
+                {userStats.modulesCompleted}
+              </div>
+              <div className="text-sm text-purple-700 dark:text-purple-300">
+                Ukończone moduły
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 border-yellow-200 dark:border-yellow-800">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-yellow-700 dark:text-yellow-300 flex items-center">
+                <Award className="w-4 h-4 mr-2" />
+                Certyfikaty
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-100 mb-2">
+                {userStats.certificatesEarned}
+              </div>
+              <div className="text-sm text-yellow-700 dark:text-yellow-300">
+                Zdobyte certyfikaty
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Weekly Progress */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Calendar className="w-5 h-5 mr-2 text-blue-600" />
+                Tygodniowy Postęp
+              </CardTitle>
+              <CardDescription>
+                Cel: {userStats.weeklyGoal} XP dziennie • Osiągnięto: {userStats.weeklyProgress}%
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Progress value={userStats.weeklyProgress} className="h-3" />
+                <div className="grid grid-cols-7 gap-2">
+                  {weeklyProgress.map((day, index) => (
+                    <div key={index} className="text-center">
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        {day.day}
+                      </div>
+                      <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded relative overflow-hidden">
+                        <div 
+                          className={`absolute bottom-0 w-full transition-all duration-300 ${
+                            day.xp >= day.goal ? 'bg-green-500' : 'bg-blue-500'
+                          }`}
+                          style={{ height: `${Math.min((day.xp / day.goal) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <div className="text-xs font-medium mt-1">
+                        {day.xp}
+                      </div>
                     </div>
-                    <CardTitle className="text-xl text-financial-navy">{userStats.name}</CardTitle>
-                    <CardDescription>Poziom {userStats.level} Inwestor</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {/* XP Progress */}
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="text-gray-600">Doświadczenie</span>
-                        <span className="text-financial-navy font-medium">
-                          {userStats.xp}/{userStats.nextLevelXp} XP
-                        </span>
-                      </div>
-                      <Progress value={(userStats.xp / userStats.nextLevelXp) * 100} className="h-3" />
-                    </div>
-
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <div className="text-2xl font-bold text-financial-navy">{userStats.streak}</div>
-                        <div className="text-sm text-gray-600">Dni z rzędu</div>
-                      </div>
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <div className="text-2xl font-bold text-financial-gold">{userStats.certificates}</div>
-                        <div className="text-sm text-gray-600">Certyfikaty</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Progress Overview */}
-                <div className="lg:col-span-2 space-y-6">
-                  {/* Modules Progress */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <BookOpen className="w-5 h-5 text-financial-navy" />
-                        <span>Postęp w Modułach</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="text-gray-600">Ukończone moduły</span>
-                        <span className="text-financial-navy font-medium">
-                          {userStats.completedModules}/{userStats.totalModules}
-                        </span>
-                      </div>
-                      <Progress 
-                        value={(userStats.completedModules / userStats.totalModules) * 100} 
-                        className="h-3 mb-4" 
-                      />
-                      
-                      <div className="grid grid-cols-3 gap-4 text-center">
-                        <div>
-                          <div className="text-lg font-bold text-financial-navy">{userStats.hoursLearned}h</div>
-                          <div className="text-sm text-gray-600">Godzin nauki</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-green-600">85%</div>
-                          <div className="text-sm text-gray-600">Śr. wynik testów</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-financial-gold">Top 15%</div>
-                          <div className="text-sm text-gray-600">Ranking</div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Recommended Next Steps */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Target className="w-5 h-5 text-financial-gold" />
-                        <span>Rekomendowane Następne Kroki</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        {recommendedNext.map((item, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-financial-navy">{item.title}</h4>
-                              <p className="text-sm text-gray-600">{item.description}</p>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                              <Badge variant="outline" className="text-xs">
-                                <Clock className="w-3 h-3 mr-1" />
-                                {item.duration}
-                              </Badge>
-                              <Button size="sm">Rozpocznij</Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  ))}
                 </div>
               </div>
-            </TabsContent>
+            </CardContent>
+          </Card>
 
-            <TabsContent value="achievements" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {achievements.map((achievement) => (
-                  <Card key={achievement.id} className={`transition-all duration-300 ${
-                    achievement.earned 
-                      ? 'bg-gradient-to-br from-financial-gold/5 to-yellow-50 border-financial-gold/30 hover-scale' 
-                      : 'bg-gray-50 opacity-60'
-                  }`}>
-                    <CardHeader className="text-center">
-                      <div className="text-4xl mb-2">{achievement.icon}</div>
-                      <CardTitle className={`text-lg ${
-                        achievement.earned ? 'text-financial-navy' : 'text-gray-500'
-                      }`}>
-                        {achievement.name}
-                      </CardTitle>
-                      <CardDescription className={achievement.earned ? 'text-gray-700' : 'text-gray-400'}>
-                        {achievement.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                      {achievement.earned ? (
-                        <Badge className="bg-financial-gold text-white">
-                          <Award className="w-3 h-3 mr-1" />
-                          Zdobyte
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-gray-500">
-                          Zablokowane
-                        </Badge>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="activity" className="mt-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Calendar className="w-5 h-5 text-financial-navy" />
-                    <span>Ostatnia Aktywność</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentActivity.map((activity, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-financial-navy/10 rounded-full flex items-center justify-center">
-                            <Zap className="w-5 h-5 text-financial-navy" />
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-financial-navy">{activity.action}</h4>
-                            <p className="text-sm text-gray-600">{activity.module}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm text-gray-500">{activity.time}</div>
-                          <Badge variant="outline" className="mt-1">
-                            +{activity.xp} XP
-                          </Badge>
-                        </div>
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Clock className="w-5 h-5 mr-2 text-green-600" />
+                Ostatnia Aktywność
+              </CardTitle>
+              <CardDescription>
+                Twoje najnowsze osiągnięcia
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentActivity.map((activity) => (
+                  <div key={activity.id} className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    {getActivityIcon(activity.type)}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        {activity.title}
                       </div>
-                    ))}
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        {formatTimeAgo(activity.timestamp)}
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      +{activity.xp} XP
+                    </Badge>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                ))}
+                <Button variant="ghost" className="w-full text-center">
+                  Zobacz wszystko
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>

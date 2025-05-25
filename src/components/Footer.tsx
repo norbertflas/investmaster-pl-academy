@@ -1,111 +1,132 @@
 
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { TrendingUp, Mail, MapPin, Phone, Facebook, Twitter, Linkedin, Youtube } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { TrendingUp, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Youtube } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-financial-navy text-white">
-      <div className="container mx-auto px-4 py-16">
+    <footer className="bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center space-x-2 mb-6">
-              <div className="w-10 h-10 bg-financial-gold rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-financial-navy" />
+          <div className="space-y-4">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">InvestMaster PL</h3>
-                <p className="text-blue-200 text-sm">Kształtujemy Inteligentnych Inwestorów</p>
+                <h1 className="text-xl font-bold">InvestMaster PL</h1>
+                <p className="text-xs text-gray-400 leading-tight">Kształtujemy Inteligentnych Inwestorów</p>
               </div>
-            </div>
-            <p className="text-blue-200 mb-6 leading-relaxed">
-              Kompleksowa platforma edukacyjna, która przekształca Cię w świadomego inwestora.
-              Ucz się od podstaw i rozwijaj umiejętności inwestycyjne krok po kroku.
+            </Link>
+            <p className="text-gray-400 text-sm">
+              Kompleksowa platforma edukacyjna dla polskich inwestorów. 
+              Ucz się, analizuj i inwestuj świadomie.
             </p>
-            <div className="flex space-x-3">
-              <Button variant="ghost" size="sm" className="text-blue-200 hover:text-white hover:bg-blue-800">
-                <Facebook className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-blue-200 hover:text-white hover:bg-blue-800">
-                <Twitter className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-blue-200 hover:text-white hover:bg-blue-800">
-                <Linkedin className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-blue-200 hover:text-white hover:bg-blue-800">
-                <Youtube className="w-4 h-4" />
-              </Button>
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Linkedin className="w-5 h-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-red-400 transition-colors">
+                <Youtube className="w-5 h-5" />
+              </a>
             </div>
-          </div>
-
-          {/* Platform Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-6">Platforma</h4>
-            <nav className="space-y-3">
-              <a href="#modules" className="block text-blue-200 hover:text-white transition-colors">Moduły Edukacyjne</a>
-              <a href="#news" className="block text-blue-200 hover:text-white transition-colors">Wiadomości Rynkowe</a>
-              <a href="#glossary" className="block text-blue-200 hover:text-white transition-colors">Słowniczek</a>
-              <a href="#community" className="block text-blue-200 hover:text-white transition-colors">Społeczność</a>
-              <a href="#certificates" className="block text-blue-200 hover:text-white transition-colors">Certyfikaty</a>
-              <a href="#dashboard" className="block text-blue-200 hover:text-white transition-colors">Dashboard</a>
-            </nav>
           </div>
 
           {/* Education Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-6">Edukacja</h4>
-            <nav className="space-y-3">
-              <a href="#basic" className="block text-blue-200 hover:text-white transition-colors">Podstawy Inwestowania</a>
-              <a href="#polish-market" className="block text-blue-200 hover:text-white transition-colors">Polski Rynek</a>
-              <a href="#assets" className="block text-blue-200 hover:text-white transition-colors">Klasy Aktywów</a>
-              <a href="#analysis" className="block text-blue-200 hover:text-white transition-colors">Analiza Techniczna</a>
-              <a href="#ai-trading" className="block text-blue-200 hover:text-white transition-colors">AI w Tradingu</a>
-              <a href="#case-studies" className="block text-blue-200 hover:text-white transition-colors">Studia Przypadków</a>
-            </nav>
+            <h3 className="font-semibold text-lg mb-4">Edukacja</h3>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#modules" className="text-gray-400 hover:text-white transition-colors">Moduły Nauki</a></li>
+              <li><a href="#case-studies" className="text-gray-400 hover:text-white transition-colors">Studia Przypadków</a></li>
+              <li><a href="#glossary" className="text-gray-400 hover:text-white transition-colors">Słowniczek</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Webinary</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Kursy Certyfikowane</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Materiały PDF</a></li>
+            </ul>
           </div>
 
-          {/* Contact & Legal */}
+          {/* Resources Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-6">Kontakt</h4>
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center space-x-3 text-blue-200">
+            <h3 className="font-semibold text-lg mb-4">Zasoby</h3>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#news" className="text-gray-400 hover:text-white transition-colors">Wiadomości Rynkowe</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Analiza Rynku</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Kalkulator Inwestycyjny</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Portfel Demo</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">API Dokumentacja</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+            </ul>
+          </div>
+
+          {/* Contact Information */}
+          <div>
+            <h3 className="font-semibold text-lg mb-4">Kontakt</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center space-x-2 text-gray-400">
                 <Mail className="w-4 h-4" />
                 <span>kontakt@investmaster.pl</span>
               </div>
-              <div className="flex items-center space-x-3 text-blue-200">
+              <div className="flex items-center space-x-2 text-gray-400">
                 <Phone className="w-4 h-4" />
                 <span>+48 123 456 789</span>
               </div>
-              <div className="flex items-center space-x-3 text-blue-200">
+              <div className="flex items-center space-x-2 text-gray-400">
                 <MapPin className="w-4 h-4" />
                 <span>Warszawa, Polska</span>
               </div>
             </div>
             
-            <nav className="space-y-3">
-              <a href="#privacy" className="block text-blue-200 hover:text-white transition-colors">Polityka Prywatności</a>
-              <a href="#terms" className="block text-blue-200 hover:text-white transition-colors">Regulamin</a>
-              <a href="#about" className="block text-blue-200 hover:text-white transition-colors">O nas</a>
-              <a href="#faq" className="block text-blue-200 hover:text-white transition-colors">FAQ</a>
-            </nav>
+            <div className="mt-6">
+              <h4 className="font-medium mb-2">Newsletter</h4>
+              <p className="text-gray-400 text-xs mb-3">
+                Otrzymuj cotygodniowe analizy rynku
+              </p>
+              <div className="flex">
+                <input
+                  type="email"
+                  placeholder="Twój email"
+                  className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-l-md text-sm focus:outline-none focus:border-blue-500"
+                />
+                <button className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors text-sm">
+                  Zapisz się
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <Separator className="my-8 bg-blue-700" />
-
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <div className="text-blue-200 text-sm">
-            <p>© 2024 InvestMaster PL. Wszystkie prawa zastrzeżone.</p>
+        <div className="border-t border-gray-800 mt-12 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="text-sm text-gray-400">
+              © 2024 InvestMaster PL. Wszystkie prawa zastrzeżone.
+            </div>
+            <div className="flex space-x-6 text-sm">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                Polityka Prywatności
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                Regulamin
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                Cookies
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                Pomoc
+              </a>
+            </div>
           </div>
           
-          <div className="text-blue-200 text-sm text-center md:text-right">
-            <p className="mb-1">
-              <strong>Ważne:</strong> Platforma ma charakter wyłącznie edukacyjny.
-            </p>
+          <div className="mt-4 text-xs text-gray-500 text-center">
             <p>
-              Nie stanowi doradztwa inwestycyjnego. Inwestowanie wiąże się z ryzykiem.
+              Ostrzeżenie: Inwestowanie wiąże się z ryzykiem utraty kapitału. 
+              Wszystkie materiały mają charakter edukacyjny i nie stanowią porady inwestycyjnej.
             </p>
           </div>
         </div>

@@ -1,176 +1,197 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Globe, TrendingUp, BarChart3, Filter } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-
-interface CaseStudy {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  difficulty_level: string;
-  asset_class: string;
-  market: string;
-  content: any;
-}
+import { Badge } from '@/components/ui/badge';
+import { BookOpen, Calendar, Globe, TrendingDown, TrendingUp, Target, ChevronRight } from 'lucide-react';
 
 const CaseStudiesSection = () => {
-  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
-  const [filter, setFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const [caseStudies] = useState([
+    {
+      id: 1,
+      title: "Krach Dot-Com 2000",
+      description: "Analiza bańki internetowej i jej pęknięcia na przełomie tysiącleci",
+      category: "Historyczne kryzysy",
+      difficulty: "Średniozaawansowany",
+      market: "USA",
+      assetClass: "Akcje Tech",
+      date: "2000-2002",
+      impact: "negative",
+      keyLessons: ["Znaczenie wyceny fundamentalnej", "Psychologia tłumu", "Sygnały ostrzegawcze"],
+      readTime: "15 min"
+    },
+    {
+      id: 2,
+      title: "Sukces CD Projekt",
+      description: "Historia wzrostu polskiej spółki gamingowej od dystrybutora do globalnego dewelopera",
+      category: "Analiza spółek",
+      difficulty: "Początkujący",
+      market: "Polska",
+      assetClass: "Akcje",
+      date: "2010-2020",
+      impact: "positive",
+      keyLessons: ["Znaczenie innowacji", "Budowanie marki", "Ryzyko projektowe"],
+      readTime: "12 min"
+    },
+    {
+      id: 3,
+      title: "Kryzys Finansowy 2008",
+      description: "Globalny kryzys finansowy wywołany przez kredyty subprime",
+      category: "Historyczne kryzysy",
+      difficulty: "Zaawansowany",
+      market: "Globalny",
+      assetClass: "Instrumenty finansowe",
+      date: "2007-2009",
+      impact: "negative",
+      keyLessons: ["Ryzyko systemowe", "Znaczenie regulacji", "Zarządzanie ryzykiem"],
+      readTime: "20 min"
+    },
+    {
+      id: 4,
+      title: "Wzrost Tesla",
+      description: "Jak Tesla stała się najcenniejszą firmą motoryzacyjną na świecie",
+      category: "Analiza spółek",
+      difficulty: "Średniozaawansowany",
+      market: "USA",
+      assetClass: "Akcje",
+      date: "2010-2021",
+      impact: "positive",
+      keyLessons: ["Wizja długoterminowa", "Innowacje technologiczne", "Zmienność rynku"],
+      readTime: "18 min"
+    },
+    {
+      id: 5,
+      title: "Boom na Bitcoin 2017",
+      description: "Analiza spekulacyjnej bańki na rynku kryptowalut",
+      category: "Rynki alternatywne",
+      difficulty: "Średniozaawansowany",
+      market: "Globalny",
+      assetClass: "Kryptowaluty",
+      date: "2017-2018",
+      impact: "mixed",
+      keyLessons: ["Nowe klasy aktywów", "Mania spekulacyjna", "Regulacje rynkowe"],
+      readTime: "14 min"
+    },
+    {
+      id: 6,
+      title: "Pandemia i rynki 2020",
+      description: "Wpływ COVID-19 na globalne rynki finansowe i reakcja banków centralnych",
+      category: "Zdarzenia makro",
+      difficulty: "Zaawansowany",
+      market: "Globalny",
+      assetClass: "Wszystkie",
+      date: "2020-2021",
+      impact: "mixed",
+      keyLessons: ["Zdarzenia typu Black Swan", "Polityka monetarna", "Adaptacja biznesowa"],
+      readTime: "16 min"
+    }
+  ]);
 
-  useEffect(() => {
-    fetchCaseStudies();
-  }, []);
-
-  const fetchCaseStudies = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('case_studies')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setCaseStudies(data || []);
-    } catch (error) {
-      console.error('Error fetching case studies:', error);
-    } finally {
-      setLoading(false);
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Początkujący': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Średniozaawansowany': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Zaawansowany': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
-  const filteredCaseStudies = caseStudies.filter(study => 
-    filter === 'all' || study.difficulty_level === filter
-  );
-
-  const getDifficultyColor = (level: string) => {
-    switch (level) {
-      case 'beginner': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'advanced': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+  const getImpactIcon = (impact: string) => {
+    switch (impact) {
+      case 'positive': return <TrendingUp className="w-5 h-5 text-green-600" />;
+      case 'negative': return <TrendingDown className="w-5 h-5 text-red-600" />;
+      case 'mixed': return <Target className="w-5 h-5 text-yellow-600" />;
+      default: return <Target className="w-5 h-5 text-gray-600" />;
     }
   };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'historical_crash': return <TrendingUp className="w-5 h-5" />;
-      case 'company_analysis': return <BarChart3 className="w-5 h-5" />;
-      default: return <BookOpen className="w-5 h-5" />;
-    }
-  };
-
-  if (loading) {
-    return (
-      <section className="py-20 bg-white dark:bg-slate-900">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <div className="animate-pulse">Ładowanie studiów przypadków...</div>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
-    <section id="case-studies" className="py-20 bg-white dark:bg-slate-900">
+    <section id="case-studies" className="py-16 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
-            📚 Studia Przypadków
-          </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-primary">
-            Ucz się na Rzeczywistych Przykładach
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Studia Przypadków
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Analizuj historyczne wydarzenia, sukcesy i porażki, aby lepiej zrozumieć rynki finansowe.
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Ucz się na prawdziwych przykładach z historii rynków finansowych
           </p>
         </div>
 
-        {/* Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
-          <Button
-            variant={filter === 'all' ? 'default' : 'outline'}
-            onClick={() => setFilter('all')}
-            size="sm"
-          >
-            <Filter className="w-4 h-4 mr-2" />
-            Wszystkie
-          </Button>
-          <Button
-            variant={filter === 'beginner' ? 'default' : 'outline'}
-            onClick={() => setFilter('beginner')}
-            size="sm"
-          >
-            Początkujący
-          </Button>
-          <Button
-            variant={filter === 'intermediate' ? 'default' : 'outline'}
-            onClick={() => setFilter('intermediate')}
-            size="sm"
-          >
-            Średniozaawansowany
-          </Button>
-          <Button
-            variant={filter === 'advanced' ? 'default' : 'outline'}
-            onClick={() => setFilter('advanced')}
-            size="sm"
-          >
-            Zaawansowany
-          </Button>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredCaseStudies.map((study) => (
-            <Card key={study.id} className="hover:shadow-lg transition-all duration-300 hover-scale">
-              <CardHeader>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2 text-primary">
-                    {getCategoryIcon(study.category)}
-                  </div>
-                  <Badge className={getDifficultyColor(study.difficulty_level)}>
-                    {study.difficulty_level === 'beginner' && 'Początkujący'}
-                    {study.difficulty_level === 'intermediate' && 'Średniozaawansowany'}
-                    {study.difficulty_level === 'advanced' && 'Zaawansowany'}
+          {caseStudies.map((study) => (
+            <Card key={study.id} className="group hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  {getImpactIcon(study.impact)}
+                  <Badge variant="outline" className={getDifficultyColor(study.difficulty)}>
+                    {study.difficulty}
                   </Badge>
                 </div>
-                
-                <CardTitle className="text-xl text-primary">
+                <CardTitle className="text-xl group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {study.title}
                 </CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-300">
+                <CardDescription className="text-gray-600 dark:text-gray-400">
                   {study.description}
                 </CardDescription>
               </CardHeader>
 
-              <CardContent>
-                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  <span className="flex items-center">
-                    <Globe className="w-4 h-4 mr-1" />
-                    {study.market === 'poland' ? 'Polska' : study.market === 'usa' ? 'USA' : study.market}
-                  </span>
-                  <span className="capitalize">{study.asset_class}</span>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Rynek</div>
+                    <div className="text-gray-600 dark:text-gray-400 flex items-center">
+                      <Globe className="w-4 h-4 mr-1" />
+                      {study.market}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Okres</div>
+                    <div className="text-gray-600 dark:text-gray-400 flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {study.date}
+                    </div>
+                  </div>
                 </div>
 
-                <Button className="w-full">
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Przeczytaj studium
+                <div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100 mb-2">Kluczowe lekcje:</div>
+                  <div className="space-y-1">
+                    {study.keyLessons.slice(0, 2).map((lesson, index) => (
+                      <div key={index} className="text-sm text-gray-600 dark:text-gray-400 flex items-start">
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 mr-2 flex-shrink-0"></div>
+                        {lesson}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                    <Badge variant="outline" className="text-xs">
+                      {study.category}
+                    </Badge>
+                    <div className="flex items-center">
+                      <BookOpen className="w-4 h-4 mr-1" />
+                      {study.readTime}
+                    </div>
+                  </div>
+                </div>
+
+                <Button className="w-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  Czytaj studium
+                  <ChevronRight className="w-4 h-4 ml-2" />
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {filteredCaseStudies.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-300">
-              Brak studiów przypadków dla wybranego poziomu trudności.
-            </p>
-          </div>
-        )}
+        <div className="text-center mt-12">
+          <Button size="lg" variant="outline">
+            Zobacz wszystkie studia przypadków
+            <ChevronRight className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
       </div>
     </section>
   );
