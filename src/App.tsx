@@ -8,6 +8,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import QuizPage from "./pages/QuizPage";
+import CalculatorPage from "./pages/CalculatorPage";
+import AnalysisPage from "./pages/AnalysisPage";
+import ProgressPage from "./pages/ProgressPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -30,6 +34,10 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/quiz" element={<QuizPage />} />
+              <Route path="/calculator" element={<CalculatorPage />} />
+              <Route path="/analysis" element={<AnalysisPage />} />
+              <Route path="/progress" element={<ProgressPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
