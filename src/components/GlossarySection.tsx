@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Search, BookOpen, TrendingUp, Building, Coins, ChevronRight } from 'lucide-react';
+import { Search, BookOpen, TrendingUp, Building, Coins, ChevronRight, Target, Globe } from 'lucide-react';
 
 const GlossarySection = () => {
   const [searchTerm, setSearchTerm] = useState('');
