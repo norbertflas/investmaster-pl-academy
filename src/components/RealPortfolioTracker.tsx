@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -71,9 +70,9 @@ const RealPortfolioTracker = () => {
       if (data && data.length > 0) {
         const portfoliosWithPrices = await Promise.all(
           data.map(async (portfolio) => {
-            // Safely parse positions from JSON
-            const positions = Array.isArray(portfolio.positions) 
-              ? portfolio.positions as Position[]
+            // Safely parse positions from JSON with proper type conversion
+            const positions: Position[] = Array.isArray(portfolio.positions) 
+              ? (portfolio.positions as unknown as Position[])
               : [];
             
             const positionsWithPrices = await updatePositionPrices(positions);

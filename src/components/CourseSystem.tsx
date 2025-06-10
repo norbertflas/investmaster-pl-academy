@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -95,11 +94,19 @@ const CourseSystem = () => {
       if (error) throw error;
 
       if (coursesData && coursesData.length > 0) {
-        // Type assertion for difficulty_level and proper type conversion
-        const typedCourses = coursesData.map(course => ({
+        // Type assertion and proper type conversion
+        const typedCourses: Course[] = coursesData.map(course => ({
           ...course,
           difficulty_level: course.difficulty_level as 'beginner' | 'intermediate' | 'advanced',
-          lessons: course.lessons || []
+          lessons: (course.lessons || []).map((lesson: any) => ({
+            ...lesson,
+            content: lesson.content || {},
+            quiz_questions: Array.isArray(lesson.quiz_questions) ? lesson.quiz_questions : [],
+            course_id: lesson.course_id || course.id,
+            xp_reward: lesson.xp_reward || 0,
+            order_index: lesson.order_index || 0,
+            duration_minutes: lesson.duration_minutes || 10
+          }))
         }));
 
         let coursesWithProgress = typedCourses;
