@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      achievement_definitions: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          rarity: string | null
+          requirements: Json | null
+          reward_badge: string | null
+          reward_xp: number | null
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          rarity?: string | null
+          requirements?: Json | null
+          reward_badge?: string | null
+          reward_xp?: number | null
+          title: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          rarity?: string | null
+          requirements?: Json | null
+          reward_badge?: string | null
+          reward_xp?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
       achievements: {
         Row: {
           achievement_name: string
@@ -75,6 +117,170 @@ export type Database = {
         }
         Relationships: []
       }
+      courses: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          difficulty_level: string | null
+          estimated_hours: number | null
+          id: string
+          is_premium: boolean | null
+          order_index: number | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_hours?: number | null
+          id?: string
+          is_premium?: boolean | null
+          order_index?: number | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_hours?: number | null
+          id?: string
+          is_premium?: boolean | null
+          order_index?: number | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      financial_news: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          impact_level: string | null
+          published_at: string | null
+          relevant_symbols: string[] | null
+          sentiment: string | null
+          source: string | null
+          summary: string | null
+          title: string
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          impact_level?: string | null
+          published_at?: string | null
+          relevant_symbols?: string[] | null
+          sentiment?: string | null
+          source?: string | null
+          summary?: string | null
+          title: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          impact_level?: string | null
+          published_at?: string | null
+          relevant_symbols?: string[] | null
+          sentiment?: string | null
+          source?: string | null
+          summary?: string | null
+          title?: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
+      lessons: {
+        Row: {
+          content: Json | null
+          course_id: string | null
+          created_at: string | null
+          duration_minutes: number | null
+          id: string
+          is_free: boolean | null
+          order_index: number | null
+          quiz_questions: Json | null
+          title: string
+          updated_at: string | null
+          xp_reward: number | null
+        }
+        Insert: {
+          content?: Json | null
+          course_id?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_free?: boolean | null
+          order_index?: number | null
+          quiz_questions?: Json | null
+          title: string
+          updated_at?: string | null
+          xp_reward?: number | null
+        }
+        Update: {
+          content?: Json | null
+          course_id?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_free?: boolean | null
+          order_index?: number | null
+          quiz_questions?: Json | null
+          title?: string
+          updated_at?: string | null
+          xp_reward?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_data_cache: {
+        Row: {
+          created_at: string | null
+          data: Json
+          data_type: string
+          expires_at: string
+          id: string
+          symbol: string
+        }
+        Insert: {
+          created_at?: string | null
+          data: Json
+          data_type: string
+          expires_at: string
+          id?: string
+          symbol: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json
+          data_type?: string
+          expires_at?: string
+          id?: string
+          symbol?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -105,6 +311,36 @@ export type Database = {
           investment_goals?: string[] | null
           last_name?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_portfolios: {
+        Row: {
+          cash: number | null
+          created_at: string | null
+          id: string
+          name: string
+          positions: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cash?: number | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          positions?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cash?: number | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          positions?: Json | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -174,12 +410,71 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan_type: string | null
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan_type?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan_type?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_user_level: {
+        Args: { total_xp: number }
+        Returns: number
+      }
+      check_achievements: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      clean_expired_cache: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      update_user_stats: {
+        Args: {
+          p_user_id: string
+          p_xp_gained?: number
+          p_lesson_completed?: boolean
+          p_course_completed?: boolean
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

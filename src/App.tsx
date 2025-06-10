@@ -12,6 +12,9 @@ import QuizPage from "./pages/QuizPage";
 import CalculatorPage from "./pages/CalculatorPage";
 import AnalysisPage from "./pages/AnalysisPage";
 import ProgressPage from "./pages/ProgressPage";
+import CoursesPage from "./pages/CoursesPage";
+import PortfolioPage from "./pages/PortfolioPage";
+import NewsPage from "./pages/NewsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -38,6 +41,9 @@ const App: React.FC = () => {
               <Route path="/calculator" element={<CalculatorPage />} />
               <Route path="/analysis" element={<AnalysisPage />} />
               <Route path="/progress" element={<ProgressPage />} />
+              <Route path="/courses" element={<CoursesPage />} />
+              <Route path="/portfolio" element={<PortfolioPage />} />
+              <Route path="/news" element={<NewsPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

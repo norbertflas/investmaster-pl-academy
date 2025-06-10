@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, User, Menu, X, LogOut } from 'lucide-react';
+import { TrendingUp, User, Menu, X, LogOut, BookOpen, PieChart, Newspaper, Calculator, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -14,6 +14,14 @@ const Header = () => {
   const handleSignOut = async () => {
     await signOut();
   };
+
+  const navigationItems = [
+    { href: "/courses", label: "Kursy", icon: BookOpen },
+    { href: "/portfolio", label: "Portfel", icon: PieChart },
+    { href: "/news", label: "Aktualności", icon: Newspaper },
+    { href: "/calculator", label: "Kalkulator", icon: Calculator },
+    { href: "/analysis", label: "Analiza", icon: BarChart3 }
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 dark:bg-slate-900/95 dark:border-slate-700">
@@ -31,10 +39,19 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
-          <a href="#modules" className="text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Moduły</a>
-          <a href="#case-studies" className="text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Studia Przypadków</a>
-          <a href="#news" className="text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Wiadomości</a>
-          <a href="#glossary" className="text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Słowniczek</a>
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link 
+                key={item.href}
+                to={item.href} 
+                className="flex items-center space-x-1 text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+              >
+                <Icon className="w-4 h-4" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
 
         {/* User Actions */}
@@ -82,10 +99,20 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900">
           <nav className="container mx-auto px-4 py-4 space-y-2">
-            <a href="#modules" className="block py-2 text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Moduły</a>
-            <a href="#case-studies" className="block py-2 text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Studia Przypadków</a>
-            <a href="#news" className="block py-2 text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Wiadomości</a>
-            <a href="#glossary" className="block py-2 text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Słowniczek</a>
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className="flex items-center space-x-2 py-2 text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
             <div className="pt-2 border-t border-gray-200 dark:border-slate-700">
               {user ? (
                 <div className="space-y-2">
@@ -99,7 +126,7 @@ const Header = () => {
                   </Button>
                 </div>
               ) : (
-                <Link to="/auth">
+                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                   <Button variant="outline" size="sm" className="w-full">
                     <User className="w-4 h-4 mr-2" />
                     Zaloguj się
