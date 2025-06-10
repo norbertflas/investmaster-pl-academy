@@ -95,7 +95,14 @@ const CourseSystem = () => {
       if (error) throw error;
 
       if (coursesData && coursesData.length > 0) {
-        let coursesWithProgress = coursesData;
+        // Type assertion for difficulty_level and proper type conversion
+        const typedCourses = coursesData.map(course => ({
+          ...course,
+          difficulty_level: course.difficulty_level as 'beginner' | 'intermediate' | 'advanced',
+          lessons: course.lessons || []
+        }));
+
+        let coursesWithProgress = typedCourses;
         
         if (user) {
           const { data: progressData } = await supabase
@@ -103,7 +110,7 @@ const CourseSystem = () => {
             .select('*')
             .eq('user_id', user.id);
 
-          coursesWithProgress = coursesData.map(course => {
+          coursesWithProgress = typedCourses.map(course => {
             const courseProgress = progressData?.filter(p => p.module_id === course.id) || [];
             const completedLessons = courseProgress.filter(p => p.completed_at).length;
             const totalLessons = course.lessons?.length || 0;

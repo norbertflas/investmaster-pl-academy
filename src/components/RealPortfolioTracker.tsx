@@ -71,7 +71,11 @@ const RealPortfolioTracker = () => {
       if (data && data.length > 0) {
         const portfoliosWithPrices = await Promise.all(
           data.map(async (portfolio) => {
-            const positions = Array.isArray(portfolio.positions) ? portfolio.positions : [];
+            // Safely parse positions from JSON
+            const positions = Array.isArray(portfolio.positions) 
+              ? portfolio.positions as Position[]
+              : [];
+            
             const positionsWithPrices = await updatePositionPrices(positions);
             
             const totalValue = calculatePortfolioValue(positionsWithPrices, portfolio.cash);
@@ -110,7 +114,7 @@ const RealPortfolioTracker = () => {
   const createDefaultPortfolio = async () => {
     if (!user) return;
 
-    const defaultPositions = [
+    const defaultPositions: Position[] = [
       {
         id: '1',
         symbol: 'AAPL',
@@ -144,7 +148,7 @@ const RealPortfolioTracker = () => {
           user_id: user.id,
           name: 'Demo Portfolio',
           cash: 5000,
-          positions: defaultPositions
+          positions: defaultPositions as any // Type assertion for JSON storage
         })
         .select()
         .single();
@@ -224,7 +228,7 @@ const RealPortfolioTracker = () => {
       await supabase
         .from('user_portfolios')
         .update({ 
-          positions: updatedPositions,
+          positions: updatedPositions as any, // Type assertion for JSON storage
           updated_at: new Date().toISOString()
         })
         .eq('id', activePortfolio.id);
@@ -286,7 +290,7 @@ const RealPortfolioTracker = () => {
       await supabase
         .from('user_portfolios')
         .update({ 
-          positions: positionsWithPrices,
+          positions: positionsWithPrices as any, // Type assertion for JSON storage
           updated_at: new Date().toISOString()
         })
         .eq('id', activePortfolio.id);
@@ -319,7 +323,7 @@ const RealPortfolioTracker = () => {
       await supabase
         .from('user_portfolios')
         .update({ 
-          positions: updatedPositions,
+          positions: updatedPositions as any, // Type assertion for JSON storage
           updated_at: new Date().toISOString()
         })
         .eq('id', activePortfolio.id);
