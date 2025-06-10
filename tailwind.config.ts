@@ -63,15 +63,16 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom colors for InvestMaster PL - Investment focused
+				// Professional colors for financial applications
 				financial: {
-					navy: '#1e3a8a',
-					red: '#ef4444',
-					green: '#22c55e',
-					platinum: '#e5e7eb',
-					success: '#10b981',
-					warning: '#f59e0b',
-					danger: '#ef4444'
+					teal: '#0f766e',
+					cyan: '#06b6d4',
+					emerald: '#10b981',
+					slate: '#475569',
+					success: '#059669',
+					warning: '#d97706',
+					danger: '#dc2626',
+					neutral: '#64748b'
 				}
 			},
 			borderRadius: {
@@ -136,8 +137,9 @@ export default {
 				'gradient-shift': 'gradient-shift 3s ease-in-out infinite'
 			},
 			backgroundImage: {
-				'gradient-financial': 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #22c55e 100%)',
-				'gradient-card': 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
+				'gradient-financial': 'linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #06b6d4 100%)',
+				'gradient-card': 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+				'gradient-dark-card': 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
 			}
 		}
 	},
