@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import ModulesSection from '@/components/ModulesSection';
-import NewsSection from '@/components/NewsSection';
+import RealNewsSection from '@/components/RealNewsSection';
 import GlossarySection from '@/components/GlossarySection';
 import UserDashboard from '@/components/UserDashboard';
 import CaseStudiesSection from '@/components/CaseStudiesSection';
@@ -37,7 +37,7 @@ const Index = () => {
           </>
         ) : null}
         <CaseStudiesSection />
-        <NewsSection />
+        <RealNewsSection />
         <GlossarySection />
         <Footer />
       </div>
