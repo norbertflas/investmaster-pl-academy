@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, ComposedChart } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, ComposedChart, ReferenceLine } from 'recharts';
 import { TrendingUp, TrendingDown, BarChart3, Search, Activity } from 'lucide-react';
 import { alphaVantageService } from '@/services/alphaVantageService';
 import { useToast } from '@/hooks/use-toast';
@@ -218,6 +218,8 @@ const TechnicalAnalysis = () => {
                   <YAxis domain={[0, 100]} />
                   <Tooltip />
                   <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} />
+                  <ReferenceLine y={70} stroke="#ef4444" strokeDasharray="5 5" />
+                  <ReferenceLine y={30} stroke="#10b981" strokeDasharray="5 5" />
                 </LineChart>
               )}
               
