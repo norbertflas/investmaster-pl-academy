@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, ComposedChart } from 'recharts';
 import { TrendingUp, TrendingDown, BarChart3, Search, Activity } from 'lucide-react';
 import { alphaVantageService } from '@/services/alphaVantageService';
 import { useToast } from '@/hooks/use-toast';
@@ -219,13 +218,11 @@ const TechnicalAnalysis = () => {
                   <YAxis domain={[0, 100]} />
                   <Tooltip />
                   <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} />
-                  <Line y={70} stroke="#ef4444" strokeDasharray="5 5" />
-                  <Line y={30} stroke="#10b981" strokeDasharray="5 5" />
                 </LineChart>
               )}
               
               {activeTab === 'macd' && (
-                <LineChart data={macdData}>
+                <ComposedChart data={macdData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
@@ -233,7 +230,7 @@ const TechnicalAnalysis = () => {
                   <Line type="monotone" dataKey="macd" stroke="#2563eb" strokeWidth={2} />
                   <Line type="monotone" dataKey="signal" stroke="#ef4444" strokeWidth={2} />
                   <Bar dataKey="histogram" fill="#10b981" />
-                </LineChart>
+                </ComposedChart>
               )}
               
               {activeTab === 'sma' && (
