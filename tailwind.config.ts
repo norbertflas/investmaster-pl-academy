@@ -70,7 +70,7 @@ export default {
 					emerald: '#10b981',
 					slate: '#475569',
 					success: '#059669',
-					warning: '#d97706',
+					warning: '#94a3b8',
 					danger: '#dc2626',
 					neutral: '#64748b'
 				}
