@@ -1,4 +1,3 @@
-
 interface StockData {
   symbol: string;
   price: number;
@@ -33,9 +32,8 @@ interface NewsItem {
 }
 
 class MarketDataService {
-  private readonly ALPHA_VANTAGE_KEY = import.meta.env.VITE_ALPHA_VANTAGE_KEY;
   private readonly NBP_API_BASE = 'https://api.nbp.pl/api';
-  private readonly ALPHA_VANTAGE_BASE = 'https://www.alphavantage.co/query';
+  private readonly SUPABASE_FUNCTION_URL = 'https://bkbnbvtbkgozzxqekoxv.supabase.co/functions/v1/market-data';
 
   // Cache dla optymalizacji - dane giełdowe nie zmieniają się co sekundę
   private cache = new Map<string, { data: any; timestamp: number }>();
@@ -51,6 +49,26 @@ class MarketDataService {
 
   private setCachedData(key: string, data: any): void {
     this.cache.set(key, { data, timestamp: Date.now() });
+  }
+
+  // Helper method to call our Supabase edge function
+  private async callAlphaVantageAPI(params: Record<string, any>): Promise<any> {
+    const response = await fetch(this.SUPABASE_FUNCTION_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        endpoint: 'query',
+        params
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
   }
 
   // Pobieranie cen akcji polskich (GPW)
@@ -100,13 +118,10 @@ class MarketDataService {
     if (cached) return cached;
 
     try {
-      const url = `${this.ALPHA_VANTAGE_BASE}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${this.ALPHA_VANTAGE_KEY}`;
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data['Error Message'] || data['Note']) {
-        throw new Error('API limit reached or invalid symbol');
-      }
+      const data = await this.callAlphaVantageAPI({
+        function: 'GLOBAL_QUOTE',
+        symbol: symbol
+      });
 
       const quote = data['Global Quote'];
       if (!quote) return null;
@@ -135,11 +150,12 @@ class MarketDataService {
     if (cached) return cached;
 
     try {
-      const url = `${this.ALPHA_VANTAGE_BASE}?function=OVERVIEW&symbol=${symbol}&apikey=${this.ALPHA_VANTAGE_KEY}`;
-      const response = await fetch(url);
-      const data = await response.json();
+      const data = await this.callAlphaVantageAPI({
+        function: 'OVERVIEW',
+        symbol: symbol
+      });
 
-      if (data['Error Message'] || !data['Symbol']) {
+      if (!data['Symbol']) {
         return null;
       }
 
@@ -220,10 +236,11 @@ class MarketDataService {
     if (cached) return cached;
 
     try {
-      // Alpha Vantage News API
-      const url = `${this.ALPHA_VANTAGE_BASE}?function=NEWS_SENTIMENT&topics=financial_markets&limit=${limit}&apikey=${this.ALPHA_VANTAGE_KEY}`;
-      const response = await fetch(url);
-      const data = await response.json();
+      const data = await this.callAlphaVantageAPI({
+        function: 'NEWS_SENTIMENT',
+        topics: 'financial_markets',
+        limit: limit
+      });
 
       if (!data.feed) return [];
 
@@ -278,9 +295,11 @@ class MarketDataService {
     if (cached) return cached;
 
     try {
-      const url = `${this.ALPHA_VANTAGE_BASE}?function=CURRENCY_EXCHANGE_RATE&from_currency=${symbol}&to_currency=USD&apikey=${this.ALPHA_VANTAGE_KEY}`;
-      const response = await fetch(url);
-      const data = await response.json();
+      const data = await this.callAlphaVantageAPI({
+        function: 'CURRENCY_EXCHANGE_RATE',
+        from_currency: symbol,
+        to_currency: 'USD'
+      });
 
       const exchangeRate = data['Realtime Currency Exchange Rate'];
       if (!exchangeRate) return null;
