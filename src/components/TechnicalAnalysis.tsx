@@ -212,7 +212,7 @@ const TechnicalAnalysis = () => {
               )}
               
               {activeTab === 'rsi' && (
-                <LineChart data={rsiData}>
+                <ComposedChart data={rsiData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis domain={[0, 100]} />
@@ -220,7 +220,7 @@ const TechnicalAnalysis = () => {
                   <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} />
                   <ReferenceLine y={70} stroke="#ef4444" strokeDasharray="5 5" label={{ value: "Overbought", position: "insideTopRight" }} />
                   <ReferenceLine y={30} stroke="#10b981" strokeDasharray="5 5" label={{ value: "Oversold", position: "insideBottomRight" }} />
-                </LineChart>
+                </ComposedChart>
               )}
               
               {activeTab === 'macd' && (
