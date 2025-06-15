@@ -9,7 +9,7 @@ const PortfolioPage = () => {
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="py-16">
+        <main className="py-8">
           <div className="container mx-auto px-4">
             <RealPortfolioTracker />
           </div>

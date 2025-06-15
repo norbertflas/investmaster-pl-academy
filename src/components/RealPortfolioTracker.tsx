@@ -5,11 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TrendingUp, TrendingDown, DollarSign, PieChart, Plus, Trash2, RefreshCw, Activity } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TrendingUp, TrendingDown, DollarSign, PieChart, Plus, Trash2, RefreshCw, Activity, BarChart3, Calculator } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { marketDataService } from '@/services/marketData';
+import { alphaVantageService } from '@/services/alphaVantageService';
 import { useToast } from '@/hooks/use-toast';
+import TechnicalAnalysis from './TechnicalAnalysis';
+import FundamentalAnalysis from './FundamentalAnalysis';
+import MarketOverview from './MarketOverview';
 
 interface Position {
   id: string;
@@ -49,6 +54,7 @@ const RealPortfolioTracker = () => {
     avgPrice: ''
   });
   const [addingPosition, setAddingPosition] = useState(false);
+  const [activeTab, setActiveTab] = useState('portfolio');
 
   useEffect(() => {
     if (user) {
@@ -372,14 +378,14 @@ const RealPortfolioTracker = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             Portfolio Tracker
           </h2>
           <p className="text-gray-600 dark:text-gray-300">
-            Śledź swoje inwestycje w czasie rzeczywistym
+            Kompleksowe narzędzie analizy inwestycyjnej
           </p>
         </div>
         <Button onClick={refreshPrices} disabled={refreshing}>
@@ -388,181 +394,216 @@ const RealPortfolioTracker = () => {
         </Button>
       </div>
 
-      {activePortfolio && (
-        <>
-          {/* Portfolio Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                      Wartość Portfela
-                    </p>
-                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                      ${activePortfolio.totalValue?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                  <DollarSign className="w-8 h-8 text-blue-600" />
-                </div>
-              </CardContent>
-            </Card>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="portfolio" className="flex items-center">
+            <PieChart className="w-4 h-4 mr-2" />
+            Portfel
+          </TabsTrigger>
+          <TabsTrigger value="technical" className="flex items-center">
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Analiza Techniczna
+          </TabsTrigger>
+          <TabsTrigger value="fundamental" className="flex items-center">
+            <Calculator className="w-4 h-4 mr-2" />
+            Analiza Fundamentalna
+          </TabsTrigger>
+          <TabsTrigger value="market" className="flex items-center">
+            <TrendingUp className="w-4 h-4 mr-2" />
+            Przegląd Rynku
+          </TabsTrigger>
+        </TabsList>
 
-            <Card className={`${activePortfolio.totalReturn && activePortfolio.totalReturn >= 0 ? 'bg-green-50 dark:bg-green-900/20 border-green-200' : 'bg-red-50 dark:bg-red-900/20 border-red-200'}`}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm font-medium ${activePortfolio.totalReturn && activePortfolio.totalReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      Zysk/Strata
-                    </p>
-                    <p className={`text-2xl font-bold ${activePortfolio.totalReturn && activePortfolio.totalReturn >= 0 ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'}`}>
-                      ${activePortfolio.totalReturn?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                  {activePortfolio.totalReturn && activePortfolio.totalReturn >= 0 ? (
-                    <TrendingUp className="w-8 h-8 text-green-600" />
-                  ) : (
-                    <TrendingDown className="w-8 h-8 text-red-600" />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-purple-50 dark:bg-purple-900/20 border-purple-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-purple-600 dark:text-purple-400">
-                      Gotówka
-                    </p>
-                    <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-                      ${activePortfolio.cash.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                  <PieChart className="w-8 h-8 text-purple-600" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-orange-50 dark:bg-orange-900/20 border-orange-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
-                      Pozycje
-                    </p>
-                    <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
-                      {activePortfolio.positions.length}
-                    </p>
-                  </div>
-                  <Activity className="w-8 h-8 text-orange-600" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Add Position Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Plus className="w-5 h-5 mr-2" />
-                Dodaj Nową Pozycję
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+        <TabsContent value="portfolio" className="space-y-6">
+          {activePortfolio && (
+            <>
+              {/* Portfolio Summary */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Input
-                  placeholder="Symbol (np. AAPL)"
-                  value={newPosition.symbol}
-                  onChange={(e) => setNewPosition({ ...newPosition, symbol: e.target.value.toUpperCase() })}
-                />
-                <Input
-                  type="number"
-                  placeholder="Ilość"
-                  value={newPosition.quantity}
-                  onChange={(e) => setNewPosition({ ...newPosition, quantity: e.target.value })}
-                />
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="Średnia cena"
-                  value={newPosition.avgPrice}
-                  onChange={(e) => setNewPosition({ ...newPosition, avgPrice: e.target.value })}
-                />
-                <Button onClick={addPosition} disabled={addingPosition}>
-                  {addingPosition ? 'Dodawanie...' : 'Dodaj Pozycję'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                          Wartość Portfela
+                        </p>
+                        <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                          ${activePortfolio.totalValue?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </p>
+                      </div>
+                      <DollarSign className="w-8 h-8 text-blue-600" />
+                    </div>
+                  </CardContent>
+                </Card>
 
-          {/* Positions Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Pozycje w Portfelu</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">Symbol</th>
-                      <th className="text-left p-2">Nazwa</th>
-                      <th className="text-right p-2">Ilość</th>
-                      <th className="text-right p-2">Śr. Cena</th>
-                      <th className="text-right p-2">Bieżąca Cena</th>
-                      <th className="text-right p-2">Wartość Rynkowa</th>
-                      <th className="text-right p-2">Zysk/Strata</th>
-                      <th className="text-right p-2">%</th>
-                      <th className="text-right p-2">Akcje</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activePortfolio.positions.map((position) => (
-                      <tr key={position.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td className="p-2 font-medium">{position.symbol}</td>
-                        <td className="p-2 text-sm text-gray-600 dark:text-gray-400">
-                          {position.name}
-                        </td>
-                        <td className="p-2 text-right">{position.quantity}</td>
-                        <td className="p-2 text-right">
-                          ${position.avgPrice.toFixed(2)}
-                        </td>
-                        <td className="p-2 text-right">
-                          ${position.currentPrice?.toFixed(2)}
-                          {position.dayChangePercent && (
-                            <div className={`text-xs ${position.dayChangePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                              {position.dayChangePercent >= 0 ? '+' : ''}{position.dayChangePercent.toFixed(2)}%
-                            </div>
-                          )}
-                        </td>
-                        <td className="p-2 text-right">
-                          ${position.marketValue?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </td>
-                        <td className={`p-2 text-right ${position.totalReturn && position.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          ${position.totalReturn?.toFixed(2)}
-                        </td>
-                        <td className={`p-2 text-right ${position.totalReturnPercent && position.totalReturnPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {position.totalReturnPercent?.toFixed(2)}%
-                        </td>
-                        <td className="p-2 text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removePosition(position.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <Card className={`${activePortfolio.totalReturn && activePortfolio.totalReturn >= 0 ? 'bg-green-50 dark:bg-green-900/20 border-green-200' : 'bg-red-50 dark:bg-red-900/20 border-red-200'}`}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`text-sm font-medium ${activePortfolio.totalReturn && activePortfolio.totalReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                          Zysk/Strata
+                        </p>
+                        <p className={`text-2xl font-bold ${activePortfolio.totalReturn && activePortfolio.totalReturn >= 0 ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'}`}>
+                          ${activePortfolio.totalReturn?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </p>
+                      </div>
+                      {activePortfolio.totalReturn && activePortfolio.totalReturn >= 0 ? (
+                        <TrendingUp className="w-8 h-8 text-green-600" />
+                      ) : (
+                        <TrendingDown className="w-8 h-8 text-red-600" />
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-purple-50 dark:bg-purple-900/20 border-purple-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-purple-600 dark:text-purple-400">
+                          Gotówka
+                        </p>
+                        <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                          ${activePortfolio.cash.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </p>
+                      </div>
+                      <PieChart className="w-8 h-8 text-purple-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-orange-50 dark:bg-orange-900/20 border-orange-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
+                          Pozycje
+                        </p>
+                        <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
+                          {activePortfolio.positions.length}
+                        </p>
+                      </div>
+                      <Activity className="w-8 h-8 text-orange-600" />
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
-        </>
-      )}
+
+              {/* Add Position Form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Dodaj Nową Pozycję
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Input
+                      placeholder="Symbol (np. AAPL)"
+                      value={newPosition.symbol}
+                      onChange={(e) => setNewPosition({ ...newPosition, symbol: e.target.value.toUpperCase() })}
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Ilość"
+                      value={newPosition.quantity}
+                      onChange={(e) => setNewPosition({ ...newPosition, quantity: e.target.value })}
+                    />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="Średnia cena"
+                      value={newPosition.avgPrice}
+                      onChange={(e) => setNewPosition({ ...newPosition, avgPrice: e.target.value })}
+                    />
+                    <Button onClick={addPosition} disabled={addingPosition}>
+                      {addingPosition ? 'Dodawanie...' : 'Dodaj Pozycję'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Positions Table */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pozycje w Portfelu</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left p-2">Symbol</th>
+                          <th className="text-left p-2">Nazwa</th>
+                          <th className="text-right p-2">Ilość</th>
+                          <th className="text-right p-2">Śr. Cena</th>
+                          <th className="text-right p-2">Bieżąca Cena</th>
+                          <th className="text-right p-2">Wartość Rynkowa</th>
+                          <th className="text-right p-2">Zysk/Strata</th>
+                          <th className="text-right p-2">%</th>
+                          <th className="text-right p-2">Akcje</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {activePortfolio.positions.map((position) => (
+                          <tr key={position.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <td className="p-2 font-medium">{position.symbol}</td>
+                            <td className="p-2 text-sm text-gray-600 dark:text-gray-400">
+                              {position.name}
+                            </td>
+                            <td className="p-2 text-right">{position.quantity}</td>
+                            <td className="p-2 text-right">
+                              ${position.avgPrice.toFixed(2)}
+                            </td>
+                            <td className="p-2 text-right">
+                              ${position.currentPrice?.toFixed(2)}
+                              {position.dayChangePercent && (
+                                <div className={`text-xs ${position.dayChangePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  {position.dayChangePercent >= 0 ? '+' : ''}{position.dayChangePercent.toFixed(2)}%
+                                </div>
+                              )}
+                            </td>
+                            <td className="p-2 text-right">
+                              ${position.marketValue?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </td>
+                            <td className={`p-2 text-right ${position.totalReturn && position.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              ${position.totalReturn?.toFixed(2)}
+                            </td>
+                            <td className={`p-2 text-right ${position.totalReturnPercent && position.totalReturnPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {position.totalReturnPercent?.toFixed(2)}%
+                            </td>
+                            <td className="p-2 text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removePosition(position.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </TabsContent>
+
+        <TabsContent value="technical">
+          <TechnicalAnalysis />
+        </TabsContent>
+
+        <TabsContent value="fundamental">
+          <FundamentalAnalysis />
+        </TabsContent>
+
+        <TabsContent value="market">
+          <MarketOverview />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
